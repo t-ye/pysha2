@@ -36,7 +36,7 @@ class sha256(object):
     digest_size = 32
     
     def __init__(self, m=None):        
-        self._buffer = ''
+        self._buffer = bytes()
         self._counter = 0
         
         if m is not None:
@@ -80,7 +80,7 @@ class sha256(object):
     def update(self, m):
         if not m:
             return
-        if type(m) is not str:
+        if not isinstance(m, (bytes, bytearray)) :
             raise TypeError('%s() argument 1 must be string, not %s' % (sys._getframe().f_code.co_name, type(m).__name__))
         
         self._buffer += m
@@ -100,11 +100,11 @@ class sha256(object):
             padlen = 119-mdi
         
         r = self.copy()
-        r.update('\x80'+('\x00'*padlen)+length)
-        return ''.join([struct.pack('!L', i) for i in r._h[:self._output_size]])
+        r.update(b'\x80'+(b'\x00'*padlen)+length)
+        return b''.join([struct.pack('!L', i) for i in r._h[:self._output_size]])
         
     def hexdigest(self):
-        return self.digest().encode('hex')
+        return self.digest().hex()
         
     def copy(self):
         return copy.deepcopy(self)
